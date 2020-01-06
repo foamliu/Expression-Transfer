@@ -23,31 +23,39 @@ if __name__ == '__main__':
 
     transform = transforms.Compose([ToTensorGjz(), NormalizeGjz(mean=127.5, std=128)])
 
-    # filename = 'images/0008.png'
-    filename = 'images/jinguanzhang.jpg'
-    img_ori = cv.imread(filename)
-    rects = face_detector(img_ori, 1)
-    rect = rects[0]
-    # bbox = [rect.left(), rect.top(), rect.right(), rect.bottom()]
-    # print('bbox: ' + str(bbox))
-    # roi_box = parse_roi_box_from_bbox(bbox)
-    # print('roi_box: ' + str(roi_box))
+    alpha_exp_list = []
 
-    # - use landmark for cropping
-    pts = face_regressor(img_ori, rect).parts()
-    pts = np.array([[pt.x, pt.y] for pt in pts]).T
-    roi_box = parse_roi_box_from_landmark(pts)
+    for i in range(97):
+        filename = 'data/{}.png'.format(i)
+        img_ori = cv.imread(filename)
+        rects = face_detector(img_ori, 1)
+        rect = rects[0]
+        # bbox = [rect.left(), rect.top(), rect.right(), rect.bottom()]
+        # print('bbox: ' + str(bbox))
+        # roi_box = parse_roi_box_from_bbox(bbox)
+        # print('roi_box: ' + str(roi_box))
 
-    img = crop_img(img_ori, roi_box)
+        # - use landmark for cropping
+        pts = face_regressor(img_ori, rect).parts()
+        pts = np.array([[pt.x, pt.y] for pt in pts]).T
+        roi_box = parse_roi_box_from_landmark(pts)
 
-    img = cv.resize(img, (120, 120), interpolation=cv.INTER_LINEAR)
-    input = transform(img).unsqueeze(0)
-    input = input.to(device)
+        img = crop_img(img_ori, roi_box)
 
-    with torch.no_grad():
-        param = model(input)
-        param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
+        img = cv.resize(img, (120, 120), interpolation=cv.INTER_LINEAR)
+        input = transform(img).unsqueeze(0)
+        input = input.to(device)
 
-    # print('param: ' + str(param))
-    p, offset, alpha_shp, alpha_exp = _parse_param(param)
-    print('alpha_exp: ' + str(alpha_exp))
+        with torch.no_grad():
+            param = model(input)
+            param = param.squeeze().cpu().numpy().flatten().astype(np.float32)
+
+        # print('param: ' + str(param))
+        p, offset, alpha_shp, alpha_exp = _parse_param(param)
+        # print('alpha_exp: ' + str(alpha_exp))
+        alpha_exp_list.append(alpha_exp)
+
+    import pickle
+
+    with open('alpha_exp.pkl', 'wb') as fp:
+        pickle.dump(alpha_exp_list, fp)
