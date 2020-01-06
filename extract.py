@@ -40,7 +40,7 @@ def extract(filename):
     # print('param: ' + str(param))
     p, offset, alpha_shp, alpha_exp = _parse_param(param)
     # print('alpha_exp: ' + str(alpha_exp))
-    return alpha_exp
+    return alpha_exp, p
 
 
 if __name__ == '__main__':
@@ -60,14 +60,20 @@ if __name__ == '__main__':
     transform = transforms.Compose([ToTensorGjz(), NormalizeGjz(mean=127.5, std=128)])
 
     alpha_exp_list = []
+    pose_list = []
 
     for i in tqdm(range(97)):
         filename = 'data/{}.png'.format(i)
 
-        alpha_exp = extract(filename)
+        alpha_exp, p = extract(filename)
         alpha_exp_list.append(alpha_exp)
+        pose_list.append(p)
 
     import pickle
 
-    with open('alpha_exp.pkl', 'wb') as fp:
-        pickle.dump(alpha_exp_list, fp)
+    data = dict()
+    data['alpha_exp'] = alpha_exp_list
+    data['pose'] = pose_list
+
+    with open('data.pkl', 'wb') as fp:
+        pickle.dump(data, fp)
