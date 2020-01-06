@@ -10,8 +10,10 @@ from config import device
 from utils.ddfa import ToTensorGjz, NormalizeGjz, _parse_param
 from utils.inference import crop_img, parse_roi_box_from_landmark
 
+
 def extract(filename):
     img_ori = cv.imread(filename)
+    img_ori = cv.cvtColor(img_ori, cv.COLOR_BGR2RGB)
     rects = face_detector(img_ori, 1)
     rect = rects[0]
     # bbox = [rect.left(), rect.top(), rect.right(), rect.bottom()]
@@ -63,7 +65,6 @@ if __name__ == '__main__':
             alpha_exp_list.append(alpha_exp)
         except IndexError as err:
             print(err)
-
 
     import pickle
 
