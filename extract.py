@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torchvision.transforms as transforms
+from tqdm import tqdm
 
 from config import device
 from utils.ddfa import ToTensorGjz, NormalizeGjz, _parse_param
@@ -25,7 +26,7 @@ if __name__ == '__main__':
 
     alpha_exp_list = []
 
-    for i in range(97):
+    for i in tqdm(range(97)):
         filename = 'data/{}.png'.format(i)
         img_ori = cv.imread(filename)
         rects = face_detector(img_ori, 1)
