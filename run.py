@@ -1,3 +1,4 @@
+import math
 import os
 import pickle
 import sys
@@ -8,17 +9,18 @@ from skimage import io
 sys.path.append('..')
 from face3d import mesh
 from face3d.morphable_model import MorphabelModel
+from utils.estimate_pose import matrix2angle
 
 s = 8e-04
 # angles = [10, 30, 20]
-angles = [0, 0, 0]
+# angles = [0, 0, 0]
 t = [0, 0, 0]
 h = w = 256
 c = 3
 save_folder = 'results'
 
 
-def transfer(alpha_exp):
+def transfer(alpha_exp, angles):
     ep[:10] = alpha_exp
     vertices = bfm.generate_vertices(sp, ep)
 
@@ -42,9 +44,18 @@ if __name__ == '__main__':
     if not os.path.exists(save_folder):
         os.mkdir(save_folder)
 
-    with open('alpha_exp.pkl', 'rb') as fp:
+    with open('data.pkl', 'rb') as fp:
         data = pickle.load(fp)
+    alpha_exp_list = data['alpha_exp']
+    pose_list = data['pose']
 
-    for i, alpha_exp in enumerate(data):
-        image = transfer(alpha_exp)
+    for i in range(97):
+        alpha_exp = alpha_exp_list[i]
+        R = pose_list[i]
+        angles = matrix2angle(R)
+        angles = np.array(angles)
+        angles *= 180 / math.pi
+        angles = [angles[1], angles[0], angles[2]]
+        print(angles)
+        image = transfer(alpha_exp, angles)
         io.imsave('{}/{}.jpg'.format(save_folder, i), image)
