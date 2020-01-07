@@ -69,9 +69,12 @@ if __name__ == '__main__':
         if not success:
             break
 
-        alpha_exp, p = extract(frame)
-        alpha_exp_list.append(alpha_exp)
-        pose_list.append(p)
+        try:
+            alpha_exp, p = extract(frame)
+            alpha_exp_list.append(alpha_exp)
+            pose_list.append(p)
+        except IndexError as err:
+            print(err)
 
     import pickle
 
