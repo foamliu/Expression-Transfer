@@ -2,7 +2,7 @@ import math
 import os
 import pickle
 import sys
-
+import cv2 as cv
 import numpy as np
 from skimage import io
 
@@ -13,14 +13,14 @@ from utils.estimate_pose import matrix2angle
 
 s = 8e-04
 # angles = [10, 30, 20]
-# angles = [0, 0, 0]
+angles = [0, 0, 0]
 t = [0, 0, 0]
 h = w = 256
 c = 3
 save_folder = 'results'
 
 
-def transfer(alpha_exp, angles):
+def transfer(alpha_exp):
     ep[:10] = alpha_exp
     vertices = bfm.generate_vertices(sp, ep)
 
@@ -49,13 +49,21 @@ if __name__ == '__main__':
     alpha_exp_list = data['alpha_exp']
     pose_list = data['pose']
 
+    fourcc = cv.VideoWriter_fourcc(*'MPEG')
+    out = cv.VideoWriter('output.avi', fourcc, 10.0, (256, 256))
+
     for i in range(97):
         alpha_exp = alpha_exp_list[i]
         R = pose_list[i]
-        angles = matrix2angle(R)
-        angles = np.array(angles)
-        angles *= 180 / math.pi
-        angles = [angles[1], angles[0], angles[2]]
-        print(angles)
-        image = transfer(alpha_exp, angles)
-        io.imsave('{}/{}.jpg'.format(save_folder, i), image)
+        # angles = matrix2angle(R)
+        # angles = np.array(angles)
+        # angles *= 180 / math.pi
+        # angles = [angles[1], angles[0], angles[2]]
+        # print(angles)
+        image = transfer(alpha_exp)
+        filename = '{}/{}.jpg'.format(save_folder, i)
+        io.imsave(filename, image)
+        img = cv.imread(filename)
+        out.write(img)
+
+    out.release()
