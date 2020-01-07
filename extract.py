@@ -64,6 +64,8 @@ if __name__ == '__main__':
     video = 'data/kuazhangbiaoqing.mp4'
     cap = cv.VideoCapture(video)
 
+    idx = 0
+
     while cap.isOpened():
         success, frame = cap.read()
         if not success:
@@ -75,6 +77,9 @@ if __name__ == '__main__':
             pose_list.append(p)
         except IndexError as err:
             print(err)
+
+        idx += 1
+        print(idx)
 
     import pickle
 
