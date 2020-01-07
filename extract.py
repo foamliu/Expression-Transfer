@@ -14,12 +14,12 @@ from utils.inference import crop_img, parse_roi_box_from_bbox, parse_roi_box_fro
 def extract(img_ori):
     rects = face_detector(img_ori, 1)
     rect = rects[0]
-    dets, landms = detector.detect_faces(img_ori)
-    det = dets[0]
-    bbox = [det[0], det[1], det[2], det[3]]
-    print('bbox: ' + str(bbox))
-    roi_box = parse_roi_box_from_bbox(bbox)
-    print('roi_box: ' + str(roi_box))
+    # dets, landms = detector.detect_faces(img_ori)
+    # det = dets[0]
+    # bbox = [det[0], det[1], det[2], det[3]]
+    # print('bbox: ' + str(bbox))
+    # roi_box = parse_roi_box_from_bbox(bbox)
+    # print('roi_box: ' + str(roi_box))
 
     # - use landmark for cropping
     pts = face_regressor(img_ori, rect).parts()
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     dlib_landmark_model = 'models/shape_predictor_68_face_landmarks.dat'
     face_regressor = dlib.shape_predictor(dlib_landmark_model)
 
-    detector = Detector()
+    # detector = Detector()
 
     transform = transforms.Compose([ToTensorGjz(), NormalizeGjz(mean=127.5, std=128)])
 
